@@ -1,0 +1,23 @@
+{
+  "match_id": "fake-epl-ars-che",
+  "sport": "football",
+  "competition": "Premier League",
+  "home": "Arsenal",
+  "away": "Chelsea",
+  "aliases": {"Arsenal": ["Gunners", "ARS"], "Chelsea": ["Blues", "CHE"]},
+  "kickoff_utc": "19:30",
+  "events": [
+    {"t": -1440, "event_type": "scheduled", "payload": {"venue": "Emirates Stadium"}},
+    {"t": -60,   "event_type": "lineups"},
+    {"t": 0,     "event_type": "start", "minute": 0},
+    {"t": 23,    "event_type": "score", "sub_type": "goal", "minute": 23, "payload": {"score": "1-0", "team": "Arsenal", "player": "Bukayo Saka"}},
+    {"t": 38,    "event_type": "discipline", "sub_type": "yellow_card", "minute": 38, "payload": {"team": "Chelsea", "player": "Moises Caicedo"}},
+    {"t": 47,    "event_type": "period_end", "sub_type": "half_time", "minute": 45, "payload": {"score": "1-0"}},
+    {"t": 62,    "event_type": "start", "sub_type": "second_half", "minute": 46},
+    {"t": 70,    "event_type": "stoppage", "sub_type": "var", "minute": 54},
+    {"t": 79,    "event_type": "score", "sub_type": "goal", "minute": 63, "payload": {"score": "1-1", "team": "Chelsea", "player": "Cole Palmer"}},
+    {"t": 101,   "event_type": "score", "sub_type": "goal", "minute": 85, "payload": {"score": "2-1", "team": "Arsenal", "player": "Declan Rice"}},
+    {"t": 108,   "event_type": "extra", "sub_type": "added_time", "minute": 90, "payload": {"added": 5}},
+    {"t": 113,   "event_type": "end", "minute": 95, "payload": {"score": "2-1"}}
+  ]
+}

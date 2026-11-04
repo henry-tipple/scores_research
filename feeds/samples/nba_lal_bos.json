@@ -1,0 +1,20 @@
+{
+  "match_id": "fake-nba-lal-bos",
+  "sport": "basketball",
+  "competition": "NBA",
+  "home": "Los Angeles Lakers",
+  "away": "Boston Celtics",
+  "aliases": {"Los Angeles Lakers": ["Lakers", "LAL"], "Boston Celtics": ["Celtics", "BOS"]},
+  "kickoff_utc": "00:30",
+  "events": [
+    {"t": -1440, "event_type": "scheduled", "payload": {"venue": "Crypto.com Arena"}},
+    {"t": -30,   "event_type": "lineups"},
+    {"t": 0,     "event_type": "start", "minute": 0},
+    {"t": 31,    "event_type": "period_end", "sub_type": "quarter", "minute": 12, "payload": {"period": 1, "score": "28-24"}},
+    {"t": 66,    "event_type": "period_end", "sub_type": "half_time", "minute": 24, "payload": {"period": 2, "score": "55-58"}},
+    {"t": 84,    "event_type": "discipline", "sub_type": "technical", "minute": 30, "payload": {"team": "Boston Celtics"}},
+    {"t": 109,   "event_type": "period_end", "sub_type": "quarter", "minute": 36, "payload": {"period": 3, "score": "84-80"}},
+    {"t": 140,   "event_type": "score", "sub_type": "three_pointer", "minute": 47, "payload": {"score": "109-107", "player": "LeBron James", "clutch": true}},
+    {"t": 146,   "event_type": "end", "minute": 48, "payload": {"score": "112-108"}}
+  ]
+}

@@ -1,0 +1,7 @@
+# Feed poller config. Override the path with FEEDS_CONFIG.
+adapter: ${FEED_ADAPTER:-fake}       # fake | sportradar
+adapter_config: {}                   # passed to the adapter constructor
+interval_idle_seconds: 3600          # hourly by default
+interval_live_seconds: 60            # every minute while a followed or sample fixture is live
+live_lead_minutes: 10                # speed up this long before kick-off
+lookback_minutes: 180                # each poll re-reads this much history (idempotent upsert)
