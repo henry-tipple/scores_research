@@ -1,0 +1,16 @@
+# Scroll the current page to the bottom, screenshotting each viewport.
+# env: CAPTURE_NAME, MAX_SCROLLS (default 25)
+appId: ${APP_ID}
+---
+- evalScript: ${output.scroll = 0; output.max = Number(MAX_SCROLLS || 25)}
+- takeScreenshot: ${SHOT_DIR}/${SHOT_PREFIX}_${CAPTURE_NAME}_00
+- repeat:
+    while:
+      true: ${output.scroll < output.max}
+      notVisible:
+        text: ${SEL_PAGE_END}          # TODO(selector)
+    commands:
+      - scroll
+      - waitForAnimationToEnd
+      - evalScript: ${output.scroll = output.scroll + 1}
+      - takeScreenshot: ${SHOT_DIR}/${SHOT_PREFIX}_${CAPTURE_NAME}_${output.scroll}

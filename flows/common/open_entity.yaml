@@ -1,0 +1,15 @@
+# Search for a team / player / league by display name and open its page.
+# env: ENTITY_NAME, ENTITY_SLUG (used in screenshot names)
+appId: ${APP_ID}
+---
+- tapOn:
+    text: ${SEL_SEARCH}                # TODO(selector)
+- tapOn:
+    text: ${SEL_SEARCH_INPUT}          # TODO(selector)
+- inputText: ${ENTITY_NAME}
+- waitForAnimationToEnd
+- tapOn:
+    text: ${ENTITY_NAME}               # TODO(selector): first result may need index or id
+    index: 0
+- waitForAnimationToEnd
+- takeScreenshot: ${SHOT_DIR}/${SHOT_PREFIX}_entity_${ENTITY_SLUG}

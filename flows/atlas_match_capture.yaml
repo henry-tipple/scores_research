@@ -1,0 +1,50 @@
+# atlas_match_capture: atlas instances. Open one match page, scroll it fully, visit
+# every tab, screenshot everything. The runner sets MATCH_ENTITY (a team in the match),
+# CAPTURE_POINT (t-7d ... t+7d, rare_state) and SPORT_LABEL; MATCH_TABS comes from the
+# app's selector file.
+# env: SPORT_LABEL, MATCH_ENTITY, MATCH_SLUG, CAPTURE_POINT, MATCH_TABS, MAX_SCROLLS
+appId: ${APP_ID}
+name: atlas_match_capture
+tags: [atlas]
+---
+- runFlow: common/launch.yaml
+- tapOn:
+    text: ${SEL_SPORT_PICKER}          # TODO(selector)
+    optional: true                     # FotMob has no sport picker
+- tapOn:
+    text: ${SPORT_LABEL}               # TODO(selector)
+    optional: true
+- runFlow:
+    file: common/open_entity.yaml
+    env:
+      ENTITY_NAME: ${MATCH_ENTITY}
+      ENTITY_SLUG: ${MATCH_SLUG}
+- tapOn:
+    text: ${SEL_FIXTURES_TAB}          # TODO(selector)
+    optional: true
+- tapOn:
+    text: ${SEL_MATCH_ROW}             # TODO(selector)
+- waitForAnimationToEnd
+- runFlow:
+    file: common/scroll_capture.yaml
+    env:
+      CAPTURE_NAME: ${CAPTURE_POINT}_default
+- evalScript: ${output.tabs = MATCH_TABS.split(',').map(function (t) { return t.trim() }); output.t = 0}
+- repeat:
+    while:
+      true: ${output.t < output.tabs.length}
+    commands:
+      - scrollUntilVisible:
+          element:
+            text: ${output.tabs[output.t]}   # TODO(selector): tabs may sit in a horizontal strip
+          direction: UP
+          optional: true
+      - tapOn:
+          text: ${output.tabs[output.t]}     # TODO(selector)
+      - waitForAnimationToEnd
+      - runFlow:
+          file: common/scroll_capture.yaml
+          env:
+            CAPTURE_NAME: ${CAPTURE_POINT}_tab${output.t}
+      - evalScript: ${output.t = output.t + 1}
+- stopApp

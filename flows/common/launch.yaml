@@ -1,0 +1,15 @@
+# Cold-start the app and clear whatever popups appear first.
+appId: ${APP_ID}
+---
+- launchApp:
+    appId: ${APP_ID}
+    stopApp: true
+- waitForAnimationToEnd:
+    timeout: 10000
+- tapOn:
+    text: ${SEL_CONSENT_ACCEPT}        # TODO(selector)
+    optional: true
+- tapOn:
+    text: ${SEL_DISMISS}               # TODO(selector)
+    optional: true
+- takeScreenshot: ${SHOT_DIR}/${SHOT_PREFIX}_launch

@@ -1,0 +1,39 @@
+# power_fan: C4. Runs at 08:00, 13:00 and 20:00; with LIVE_VISIT=true (runner sets it
+# while a followed fixture is live) it also sits on the live match page for LIVE_MS.
+# env: TEAM_1..TEAM_5, LEAGUE_1..LEAGUE_2, PLAYER_1..PLAYER_3 (names) and *_SLUG,
+#      SESSION_MS, LIVE_VISIT, LIVE_TEAM, LIVE_TEAM_SLUG, LIVE_MS, LIVE_SHOT_MS
+appId: ${APP_ID}
+name: power_fan
+tags: [cohort, daily, live]
+---
+- runFlow: common/launch.yaml
+- takeScreenshot: ${SHOT_DIR}/${SHOT_PREFIX}_home
+- evalScript: >
+    ${output.entities = [TEAM_1, TEAM_2, TEAM_3, TEAM_4, TEAM_5, LEAGUE_1, LEAGUE_2, PLAYER_1, PLAYER_2, PLAYER_3]
+      .filter(function (x) { return x && x.length > 0 }); output.e = 0}
+- repeat:
+    while:
+      true: ${output.e < output.entities.length}
+    commands:
+      - runFlow:
+          file: common/open_entity.yaml
+          env:
+            ENTITY_NAME: ${output.entities[output.e]}
+            ENTITY_SLUG: e${output.e}
+      - back
+      - evalScript: ${output.e = output.e + 1}
+- runFlow:
+    when:
+      true: ${LIVE_VISIT == 'true'}
+    commands:
+      - runFlow:
+          file: common/open_entity.yaml
+          env:
+            ENTITY_NAME: ${LIVE_TEAM}
+            ENTITY_SLUG: live_${LIVE_TEAM_SLUG}
+      - runFlow: common/live_match.yaml
+- runFlow:
+    file: common/idle.yaml
+    env:
+      IDLE_MS: ${SESSION_MS}
+- stopApp

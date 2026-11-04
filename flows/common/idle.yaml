@@ -1,0 +1,8 @@
+# Stay on the current screen for IDLE_MS milliseconds (Maestro has no sleep command:
+# wait for an element that never appears, and don't fail when it doesn't).
+appId: ${APP_ID}
+---
+- extendedWaitUntil:
+    visible: "__study_idle_marker_never_present__"
+    timeout: ${IDLE_MS}
+    optional: true

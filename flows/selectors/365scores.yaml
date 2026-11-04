@@ -1,0 +1,21 @@
+# 365Scores selectors, passed to every flow as env vars by ops/ops/flow_runner.py.
+# Every value is a placeholder until the app can be inspected (after legal sign-off):
+# replace each "TODO(selector)..." with a Maestro selector string (text or regex, or an
+# id via the *_ID variant). `maestro studio` or `maestro hierarchy` gives the real ones.
+SEL_CONSENT_ACCEPT: "TODO(selector): consent dialog accept button"
+SEL_DISMISS: "TODO(selector): generic close / not now on popups"
+SEL_HOME_TAB: "TODO(selector): bottom nav home / matches"
+SEL_SEARCH: "TODO(selector): search icon"
+SEL_SEARCH_INPUT: "TODO(selector): search text field"
+SEL_FOLLOW: "TODO(selector): follow / star button on entity page"
+SEL_FIXTURES_TAB: "TODO(selector): fixtures/matches tab on team page"
+SEL_MATCH_ROW: "TODO(selector): next or most recent match row"
+SEL_LIVE_MATCH_ROW: "TODO(selector): row with a live indicator"
+SEL_SPORT_PICKER: "TODO(selector): sport switcher / sport tabs"
+SEL_SETTINGS: "TODO(selector): settings / profile entry"
+SEL_NOTIF_SETTINGS: "TODO(selector): notifications settings entry"
+SEL_ALL_TOGGLES_ON: "TODO(selector): each notification toggle (power fan)"
+SEL_ALL_PUSH_OFF: "TODO(selector): master push toggle (opted-out cohort)"
+SEL_PAGE_END: "TODO(selector): element only visible at the bottom of a match page"
+# Comma-separated match page tab labels, in on-screen order.
+MATCH_TABS: "TODO(selector): e.g. Facts,Lineup,Stats,Table,H2H"

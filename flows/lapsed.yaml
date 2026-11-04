@@ -1,0 +1,11 @@
+# lapsed: C2. Same as daily_open on study days 1..ACTIVE_UNTIL, then does nothing.
+# The runner also stops scheduling it; the guard here makes a stray run harmless.
+# env: DAY_N (1-based study day), ACTIVE_UNTIL (7), plus daily_open's env
+appId: ${APP_ID}
+name: lapsed
+tags: [cohort, daily]
+---
+- runFlow:
+    when:
+      true: ${Number(DAY_N) <= Number(ACTIVE_UNTIL)}
+    file: daily_open.yaml

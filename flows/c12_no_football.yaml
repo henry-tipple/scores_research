@@ -1,0 +1,25 @@
+# c12_no_football: C12 (365Scores, LiveScore only). Rotating sport, never football,
+# never a live visit.
+# env: SPORT_OF_DAY, SPORT_LABEL, ENTITY_OF_DAY, ENTITY_SLUG, SESSION_MS
+appId: ${APP_ID}
+name: c12_no_football
+tags: [cohort, daily, multisport]
+---
+- runFlow: common/launch.yaml
+- takeScreenshot: ${SHOT_DIR}/${SHOT_PREFIX}_home
+- tapOn:
+    text: ${SEL_SPORT_PICKER}          # TODO(selector)
+- tapOn:
+    text: ${SPORT_LABEL}               # TODO(selector)
+- waitForAnimationToEnd
+- takeScreenshot: ${SHOT_DIR}/${SHOT_PREFIX}_sport_${SPORT_OF_DAY}
+- runFlow:
+    file: common/open_entity.yaml
+    env:
+      ENTITY_NAME: ${ENTITY_OF_DAY}
+      ENTITY_SLUG: ${ENTITY_SLUG}
+- runFlow:
+    file: common/idle.yaml
+    env:
+      IDLE_MS: ${SESSION_MS}
+- stopApp

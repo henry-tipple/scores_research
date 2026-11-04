@@ -1,0 +1,19 @@
+# Open a live match for the current entity and keep it on screen for LIVE_MS,
+# screenshotting every LIVE_SHOT_MS. The runner holds a live-visit lock meanwhile so the
+# nightly restart skips this instance.
+appId: ${APP_ID}
+---
+- tapOn:
+    text: ${SEL_LIVE_MATCH_ROW}        # TODO(selector)
+- waitForAnimationToEnd
+- evalScript: ${output.live_i = 0; output.live_n = Math.ceil(Number(LIVE_MS) / Number(LIVE_SHOT_MS || 300000))}
+- repeat:
+    while:
+      true: ${output.live_i < output.live_n}
+    commands:
+      - takeScreenshot: ${SHOT_DIR}/${SHOT_PREFIX}_live_${output.live_i}
+      - runFlow:
+          file: idle.yaml
+          env:
+            IDLE_MS: ${LIVE_SHOT_MS || 300000}
+      - evalScript: ${output.live_i = output.live_i + 1}

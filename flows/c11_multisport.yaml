@@ -1,0 +1,31 @@
+# c11_multisport: C11 (365Scores, LiveScore only).
+# Daily open with a rotating sport: the runner picks SPORT_OF_DAY / ENTITY_OF_DAY from
+# the cohort's follows by study day. Once a week per non-football sport the runner sets
+# LIVE_VISIT=true during a live fixture of that entity (and holds the live-visit lock).
+# env: SPORT_OF_DAY, SPORT_LABEL, ENTITY_OF_DAY, ENTITY_SLUG, SESSION_MS, LIVE_VISIT, LIVE_MS, LIVE_SHOT_MS
+appId: ${APP_ID}
+name: c11_multisport
+tags: [cohort, daily, multisport, live]
+---
+- runFlow: common/launch.yaml
+- takeScreenshot: ${SHOT_DIR}/${SHOT_PREFIX}_home
+- tapOn:
+    text: ${SEL_SPORT_PICKER}          # TODO(selector)
+- tapOn:
+    text: ${SPORT_LABEL}               # TODO(selector): label as shown in the app's sport list
+- waitForAnimationToEnd
+- takeScreenshot: ${SHOT_DIR}/${SHOT_PREFIX}_sport_${SPORT_OF_DAY}
+- runFlow:
+    file: common/open_entity.yaml
+    env:
+      ENTITY_NAME: ${ENTITY_OF_DAY}
+      ENTITY_SLUG: ${ENTITY_SLUG}
+- runFlow:
+    when:
+      true: ${LIVE_VISIT == 'true' && SPORT_OF_DAY != 'football'}
+    file: common/live_match.yaml
+- runFlow:
+    file: common/idle.yaml
+    env:
+      IDLE_MS: ${SESSION_MS}
+- stopApp

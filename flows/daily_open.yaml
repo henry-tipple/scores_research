@@ -1,0 +1,23 @@
+# daily_open: C3, C5, C6, C7, C8, C9, C10.
+# Open the app, look at home, open the followed team, stay SESSION_MS, close.
+# env (from ops/ops/flow_runner.py): APP_ID, TEAM_NAME, TEAM_SLUG, SESSION_MS, SHOT_DIR, SHOT_PREFIX, SEL_*
+appId: ${APP_ID}
+name: daily_open
+tags: [cohort, daily]
+---
+- runFlow: common/launch.yaml
+- tapOn:
+    text: ${SEL_HOME_TAB}              # TODO(selector)
+    optional: true
+- takeScreenshot: ${SHOT_DIR}/${SHOT_PREFIX}_home
+- runFlow:
+    file: common/open_entity.yaml
+    env:
+      ENTITY_NAME: ${TEAM_NAME}
+      ENTITY_SLUG: ${TEAM_SLUG}
+- runFlow:
+    file: common/idle.yaml
+    env:
+      IDLE_MS: ${SESSION_MS}
+- takeScreenshot: ${SHOT_DIR}/${SHOT_PREFIX}_end
+- stopApp

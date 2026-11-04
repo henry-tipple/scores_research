@@ -1,0 +1,46 @@
+# onboard: run once per cohort instance, then snapshot (python -m ops.snapshot take <id> --label onboarded).
+# Follows every entity in the cohort's follows and applies its notification preset.
+# No Google sign-in here: account creation is out of scope until legal sign-off.
+# env: FOLLOW_LIST (comma-separated names), NOTIF_PRESET (defaults | all_on | push_off)
+appId: ${APP_ID}
+name: onboard
+tags: [cohort, onboard]
+---
+- runFlow: common/launch.yaml
+- evalScript: ${output.follow = FOLLOW_LIST.split(',').map(function (t) { return t.trim() }); output.f = 0}
+- repeat:
+    while:
+      true: ${output.f < output.follow.length}
+    commands:
+      - runFlow:
+          file: common/open_entity.yaml
+          env:
+            ENTITY_NAME: ${output.follow[output.f]}
+            ENTITY_SLUG: follow${output.f}
+      - tapOn:
+          text: ${SEL_FOLLOW}              # TODO(selector)
+      - back
+      - evalScript: ${output.f = output.f + 1}
+- runFlow:
+    when:
+      true: ${NOTIF_PRESET != 'defaults'}
+    commands:
+      - tapOn:
+          text: ${SEL_SETTINGS}            # TODO(selector)
+      - tapOn:
+          text: ${SEL_NOTIF_SETTINGS}      # TODO(selector)
+      - runFlow:
+          when:
+            true: ${NOTIF_PRESET == 'all_on'}
+          commands:
+            - tapOn:
+                text: ${SEL_ALL_TOGGLES_ON}    # TODO(selector): likely one tap per toggle
+      - runFlow:
+          when:
+            true: ${NOTIF_PRESET == 'push_off'}
+          commands:
+            - tapOn:
+                text: ${SEL_ALL_PUSH_OFF}      # TODO(selector)
+      - takeScreenshot: ${SHOT_DIR}/${SHOT_PREFIX}_notif_settings
+- takeScreenshot: ${SHOT_DIR}/${SHOT_PREFIX}_onboarded
+- stopApp
