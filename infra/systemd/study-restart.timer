@@ -1,0 +1,10 @@
+[Unit]
+Description=Tick the study nightly restart scheduler every minute
+
+[Timer]
+OnCalendar=*-*-* *:*:00
+AccuracySec=5s
+Persistent=false
+
+[Install]
+WantedBy=timers.target

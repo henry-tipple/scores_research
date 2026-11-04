@@ -1,0 +1,16 @@
+# Template. Install with infra/systemd/install.sh, which fills @REPO_DIR@, @ENV_FILE@ and @USER@.
+[Unit]
+Description=Study fleet health check (ADB, logger, VPN, screenshot age)
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=@USER@
+WorkingDirectory=@REPO_DIR@
+EnvironmentFile=@ENV_FILE@
+Environment=PYTHONPATH=@REPO_DIR@/ops:@REPO_DIR@/fleet
+ExecStart=@REPO_DIR@/.venv/bin/python -m ops.health
+# exit 1 = some checks failed (already alerted); don't mark the unit failed for that
+SuccessExitStatus=1
+TimeoutStartSec=10min

@@ -1,0 +1,15 @@
+# Template. Install with infra/systemd/install.sh.
+# The timer fires every minute; ops.restart decides who is due (04:00 market-local,
+# staggered 2 min, C11 skipped while a live visit runs) and logs each restart as downtime.
+[Unit]
+Description=Study nightly instance restart (tick)
+After=docker.service
+
+[Service]
+Type=oneshot
+User=@USER@
+WorkingDirectory=@REPO_DIR@
+EnvironmentFile=@ENV_FILE@
+Environment=PYTHONPATH=@REPO_DIR@/ops:@REPO_DIR@/fleet
+ExecStart=@REPO_DIR@/.venv/bin/python -m ops.restart tick
+TimeoutStartSec=10min
