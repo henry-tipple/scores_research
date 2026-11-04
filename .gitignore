@@ -18,3 +18,4 @@ logger-apk/local.properties
 *.ovpn
 *.conf.wg
 vpn-*.env
+infra/.extra-ca.pem

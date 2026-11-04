@@ -1,0 +1,96 @@
+# Local dev stack: Postgres 16, Metabase, Mailpit and the ingest service.
+# Run from the repo root via the Makefile (`make up`), which passes --env-file .env.
+name: study
+
+x-db-env: &db-env
+  DATABASE_URL: postgresql://${POSTGRES_USER:-study}:${POSTGRES_PASSWORD:-study}@postgres:5432/${POSTGRES_DB:-study}
+  TEST_DATABASE_URL: postgresql://${POSTGRES_USER:-study}:${POSTGRES_PASSWORD:-study}@postgres:5432/study_test
+  MAILPIT_URL: http://mailpit:8025
+  MAILPIT_SMTP: mailpit:1025
+  INGEST_URL: http://ingest:8000
+  STUDY_EMAIL_DOMAIN: ${STUDY_EMAIL_DOMAIN:-example.test}
+
+services:
+  postgres:
+    image: ${POSTGRES_IMAGE:-postgres:16-alpine}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-study}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-study}
+      POSTGRES_DB: ${POSTGRES_DB:-study}
+    ports: ["127.0.0.1:${POSTGRES_PORT:-5432}:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-study} -d ${POSTGRES_DB:-study}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  mailpit:
+    image: ${MAILPIT_IMAGE:-axllent/mailpit:v1.33.0}
+    environment:
+      MP_WEBHOOK_URL: http://ingest:8000/v1/email
+      MP_WEBHOOK_LIMIT: "0"          # default rate limit silently drops bursts; /v1/email/sync backfills anyway
+      MP_SMTP_AUTH_ACCEPT_ANY: "1"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "1"
+      MP_MAX_MESSAGES: "50000"
+    ports:
+      - "127.0.0.1:${MAILPIT_SMTP_PORT:-1025}:1025"
+      - "127.0.0.1:${MAILPIT_UI_PORT:-8025}:8025"
+
+  ingest:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+      secrets: [extra_ca]
+    image: study-tools:dev
+    container_name: study-ingest
+    environment: *db-env
+    depends_on:
+      postgres: {condition: service_healthy}
+    ports: ["127.0.0.1:${INGEST_PORT:-8000}:8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  metabase:
+    image: ${METABASE_IMAGE:-metabase/metabase:v0.50.36}
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_HOST: postgres
+      MB_DB_PORT: "5432"
+      MB_DB_DBNAME: metabase
+      MB_DB_USER: ${POSTGRES_USER:-study}
+      MB_DB_PASS: ${POSTGRES_PASSWORD:-study}
+    depends_on:
+      postgres: {condition: service_healthy}
+    ports: ["127.0.0.1:${METABASE_PORT:-3000}:3000"]
+
+  # Fake match feed poller (profile: feeds). `make feeds` starts it.
+  feeds:
+    image: study-tools:dev
+    profiles: [feeds]
+    environment: *db-env
+    command: ["python", "-m", "feeds.poller"]
+    depends_on:
+      postgres: {condition: service_healthy}
+
+  # One-off tool runner: `make seed`, `make test`, `make fake-events` use it.
+  tools:
+    image: study-tools:dev
+    profiles: [tools]
+    environment: *db-env
+    working_dir: /app
+    volumes: ["..:/app"]
+    depends_on:
+      postgres: {condition: service_healthy}
+
+volumes:
+  pgdata:
+
+secrets:
+  extra_ca:
+    file: ${EXTRA_CA_FILE:-./empty-ca.pem}

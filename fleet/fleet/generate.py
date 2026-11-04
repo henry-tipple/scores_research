@@ -373,6 +373,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--fleet", type=Path)
     p.add_argument("--cohorts", type=Path)
     p.add_argument("--strict", action="store_true", help="check: treat budget overrun as an error")
+    p.add_argument("--out", type=Path, help="also write fleet.sh, redroid.txt, manifest.json, instances.sql here")
     a = p.parse_args(argv)
 
     fleet, cohorts = load_config(a.fleet, a.cohorts)
@@ -395,6 +396,13 @@ def main(argv: list[str] | None = None) -> int:
         "manifest": lambda: render_manifest(fleet, instances),
         "check": lambda: render_summary(fleet, instances),
     }[a.command]
+    if a.out:
+        a.out.mkdir(parents=True, exist_ok=True)
+        (a.out / "fleet.sh").write_text(render_docker(fleet, instances))
+        (a.out / "redroid.txt").write_text(render_redroid(fleet, instances))
+        (a.out / "manifest.json").write_text(render_manifest(fleet, instances))
+        (a.out / "instances.sql").write_text(render_sql(fleet, cohorts, instances))
+        print(f"wrote fleet.sh, redroid.txt, manifest.json, instances.sql to {a.out}", file=sys.stderr)
     sys.stdout.write(render())
     if a.command == "check" and a.strict and not (b["ram_ok"] and b["cpu_ok"]):
         return 1
