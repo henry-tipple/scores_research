@@ -1,0 +1,138 @@
+# The 12 scripted user cohorts. Single source of truth: the fleet generator turns this
+# into `cohorts` seed rows and one instance per (cohort x app).
+#
+# follows:        what the onboarding flow follows. Entity names are display names the
+#                 Maestro flows search for; they are not app-internal ids.
+# notif_settings: `preset: defaults` = leave every toggle as the app ships it.
+# apps:           omit to run on all three apps. FotMob is football-only, so the
+#                 multi-sport cohorts C11/C12 exclude it.
+# flows:          which Maestro flow drives the cohort, and when (market-local time).
+
+cohorts:
+  - id: C1
+    name: Dormant
+    market: UK
+    follows: {teams: [Arsenal]}
+    notif_settings: {preset: defaults}
+    behaviour: Onboard, then never open
+    hypothesis: Measures the baseline re-engagement / lifecycle push a silent user receives.
+    flows: {onboard: onboard, daily: null}
+
+  - id: C2
+    name: Lapsed
+    market: UK
+    follows: {teams: [Arsenal]}
+    notif_settings: {preset: defaults}
+    behaviour: Daily opens days 1-7, then stop
+    hypothesis: Shows how send volume and type change once a habitual user stops opening.
+    flows: {onboard: onboard, daily: lapsed, times: ["08:00"], active_days: [1, 7]}
+
+  - id: C3
+    name: Daily light
+    market: UK
+    follows: {teams: [Arsenal]}
+    notif_settings: {preset: defaults}
+    behaviour: One 2-min open per day at 08:00
+    hypothesis: Reference cohort for a light but steady user on default settings.
+    flows: {onboard: onboard, daily: daily_open, times: ["08:00"], session_seconds: 120}
+
+  - id: C4
+    name: Power fan
+    market: UK
+    follows:
+      teams: [Arsenal, Liverpool, Manchester City, Chelsea, Tottenham Hotspur]
+      leagues: [Premier League, UEFA Champions League]
+      players: [Bukayo Saka, Mohamed Salah, Erling Haaland]
+    notif_settings: {preset: all_on}
+    behaviour: Opens at 08:00/13:00/20:00 + live match page during followed fixtures
+    hypothesis: Upper bound on match-event push volume and latency with every toggle on.
+    flows: {onboard: onboard, daily: power_fan, times: ["08:00", "13:00", "20:00"], live_visits: followed_fixtures}
+
+  - id: C5
+    name: Opted out
+    market: UK
+    follows: {teams: [Arsenal]}
+    notif_settings: {preset: defaults, push: false, email: true}
+    behaviour: Daily open
+    hypothesis: Whether push opt-out is respected and whether email or in-app fills the gap.
+    flows: {onboard: onboard, daily: daily_open, times: ["08:00"]}
+
+  - id: C6
+    name: Premium
+    market: UK
+    follows: {teams: [Arsenal]}
+    notif_settings: {preset: defaults}
+    behaviour: Daily open; paid tier
+    hypothesis: Whether paying users get fewer commercial sends or different match alerts.
+    paid_tier: true
+    flows: {onboard: onboard, daily: daily_open, times: ["08:00"]}
+
+  - id: C7
+    name: Germany
+    market: DE
+    follows: {teams: [Bayern Munich]}
+    notif_settings: {preset: defaults}
+    behaviour: Daily open
+    hypothesis: Market differences in cadence, language and CRM content (DE).
+    flows: {onboard: onboard, daily: daily_open, times: ["08:00"]}
+
+  - id: C8
+    name: Italy
+    market: IT
+    follows: {teams: [Juventus]}
+    notif_settings: {preset: defaults}
+    behaviour: Daily open
+    hypothesis: Market differences in cadence, language and CRM content (IT).
+    flows: {onboard: onboard, daily: daily_open, times: ["08:00"]}
+
+  - id: C9
+    name: Spain
+    market: ES
+    follows: {teams: [Real Madrid]}
+    notif_settings: {preset: defaults}
+    behaviour: Daily open
+    hypothesis: Market differences in cadence, language and CRM content (ES).
+    flows: {onboard: onboard, daily: daily_open, times: ["08:00"]}
+
+  - id: C10
+    name: Japan
+    market: JP
+    follows: {teams: [Vissel Kobe], leagues: [J1 League]}
+    notif_settings: {preset: defaults}
+    behaviour: Daily open
+    hypothesis: Market differences for a non-European market with a domestic league follow.
+    flows: {onboard: onboard, daily: daily_open, times: ["08:00"]}
+
+  - id: C11
+    name: Multi-sport
+    market: UK
+    apps: [365scores, livescore]
+    follows:
+      teams:
+        - {name: Arsenal, sport: football}
+        - {name: Los Angeles Lakers, sport: basketball}
+        - {name: Kansas City Chiefs, sport: american_football}
+        - {name: England, sport: cricket}
+        - {name: Toronto Maple Leafs, sport: ice_hockey}
+      players:
+        - {name: Carlos Alcaraz, sport: tennis}
+    notif_settings: {preset: defaults}
+    behaviour: Daily open with rotating sport; one live visit per non-football sport per week
+    hypothesis: How push volume and match-page depth vary by sport for a multi-sport fan.
+    flows: {onboard: onboard, daily: c11_multisport, times: ["08:00"], live_visits: weekly_per_non_football_sport}
+
+  - id: C12
+    name: No football
+    market: UK
+    apps: [365scores, livescore]
+    follows:
+      teams:
+        - {name: Los Angeles Lakers, sport: basketball}
+        - {name: England, sport: cricket}
+        - {name: Toronto Maple Leafs, sport: ice_hockey}
+      players:
+        - {name: Carlos Alcaraz, sport: tennis}
+    notif_settings: {preset: defaults}
+    behaviour: Daily open with rotating sport; no live visits
+    hypothesis: Whether football-first apps still push football (or generic) content to a non-football fan.
+    flows: {onboard: onboard, daily: c12_no_football, times: ["08:00"]}

@@ -1,0 +1,8 @@
+# Mirrors pyproject.toml so the Docker image can install without a build backend.
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+pydantic==2.10.4
+psycopg[binary,pool]==3.2.3
+httpx==0.28.1
+pyyaml==6.0.2
+pytest==8.3.4

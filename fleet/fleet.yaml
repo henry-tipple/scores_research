@@ -1,0 +1,80 @@
+# Fleet-wide config for the instance generator (fleet/fleet/generate.py).
+# Nothing here is secret. The email domain, image names and host paths can be overridden
+# from the environment (see .env.example) so real values never get committed.
+
+apps:
+  365scores: {package: com.scores365,           name: 365Scores}
+  fotmob:    {package: com.mobilefootie.wc2010, name: FotMob}
+  livescore: {package: com.livescore,           name: LiveScore}
+
+markets:
+  UK: {locale: en-GB, tz: Europe/London, country: GB, subnet: 172.30.1.0/24}
+  DE: {locale: de-DE, tz: Europe/Berlin, country: DE, subnet: 172.30.2.0/24}
+  IT: {locale: it-IT, tz: Europe/Rome,   country: IT, subnet: 172.30.3.0/24}
+  ES: {locale: es-ES, tz: Europe/Madrid, country: ES, subnet: 172.30.4.0/24}
+  JP: {locale: ja-JP, tz: Asia/Tokyo,    country: JP, subnet: 172.30.5.0/24}
+
+atlas:
+  per_app: 2          # atlas-1-<app>, atlas-2-<app>
+  market: UK
+
+email:
+  domain: ${STUDY_EMAIL_DOMAIN:-example.test}
+  # <market>-<cohort>-<app>@<domain>; atlas instances use their instance id as the local part.
+
+host:
+  # Not final. Edit this or override with FLEET_HOST_RAM_GB / FLEET_HOST_CPUS.
+  ram_gb: ${FLEET_HOST_RAM_GB:-64}
+  cpus: ${FLEET_HOST_CPUS:-16}
+  reserved_ram_gb: 8          # Postgres, Metabase, Mailpit, ingest, VPN gateways, OS
+  max_cpu_overcommit: 3.0     # warn when sum(--cpus) of running instances exceeds cpus x this
+
+resources:
+  # Per-instance limits passed to `docker run --cpus/--memory`. Order of precedence:
+  # per-instance override > per-kind > default.
+  default: {cpus: 1.0, memory_gb: 1.5}
+  kind:
+    atlas: {cpus: 2.0, memory_gb: 2.5}   # long scroll-and-screenshot sessions
+  instance: {}                           # e.g. uk-c4-fotmob: {cpus: 1.5, memory_gb: 2.0}
+
+# Waves let instances take turns so peak RAM fits the host. A wave is active when the
+# current UTC day AND hour match. `days` uses mon..sun; `hours` is a list of "HH-HH"
+# ranges (end exclusive, may wrap past midnight). Omit both for always-on.
+# Cohort instances should stay in `core`: time a cohort instance spends switched off is
+# logged as downtime (reason wave_off) and counts against send coverage.
+waves:
+  core: {}
+  atlas-365scores: {days: [mon, thu, sun]}
+  atlas-livescore: {days: [tue, fri]}
+  atlas-fotmob:    {days: [wed, sat]}
+
+assign_waves:
+  cohort: core
+  atlas: atlas-{app}
+
+redroid:
+  image: ${REDROID_IMAGE:-redroid-gapps:16.0.0-placeholder}   # custom Android 16 + GApps build
+  data_root: ${REDROID_DATA_ROOT:-/srv/redroid/data}
+  adb_bind: 127.0.0.1
+  adb_port_base: 5600
+  gpu_mode: guest
+  extra_args: []                       # extra androidboot.* / ro.* props for every instance
+
+vpn:
+  # One gateway container per market on that market's docker network (see fleet/vpn/README.md).
+  gateway_image: ${VPN_GATEWAY_IMAGE:-qmcgaw/gluetun:v3.40}
+  gateway_host: 2                      # .2 in each market subnet
+  ingest_host: 3                       # ingest is attached to every market network at .3
+  first_instance_host: 10
+  env_file_dir: ${VPN_ENV_DIR:-/etc/study/vpn}   # vpn-<market>.env lives on the server, never in git
+
+ingest:
+  port: 8000
+
+# Device profiles are assigned per cohort (and per atlas slot), never per app, so the
+# three apps in a cohort always run on the same "phone".
+device_profiles:
+  - {model: Pixel 8,       brand: google,  manufacturer: Google,  device: shiba,  width: 1080, height: 2400, dpi: 420}
+  - {model: Pixel 7a,      brand: google,  manufacturer: Google,  device: lynx,   width: 1080, height: 2400, dpi: 420}
+  - {model: SM-S911B,      brand: samsung, manufacturer: samsung, device: dm1q,   width: 1080, height: 2340, dpi: 420}
+  - {model: SM-A546B,      brand: samsung, manufacturer: samsung, device: a54x,   width: 1080, height: 2340, dpi: 400}

@@ -1,0 +1,21 @@
+[project]
+name = "scores-research"
+version = "0.1.0"
+description = "Competitor push & UI study: ingest, feeds, fleet and ops tooling"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi==0.115.6",
+  "uvicorn[standard]==0.32.1",
+  "pydantic==2.10.4",
+  "psycopg[binary,pool]==3.2.3",
+  "httpx==0.28.1",
+  "pyyaml==6.0.2",
+]
+
+[dependency-groups]
+dev = ["pytest==8.3.4"]
+
+[tool.pytest.ini_options]
+testpaths = ["fleet/tests", "ingest/tests", "feeds/tests", "ops/tests", "flows/tests"]
+pythonpath = ["fleet", "ingest", "feeds", "ops", "db"]
+addopts = "-q"
