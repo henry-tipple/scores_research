@@ -84,8 +84,12 @@ def post_notification(n: NotificationIn, response: Response, conn=Depends(conn_d
                                        n.channel_id, n.title, n.text, n.big_text),
         dedupe_window=settings.dedupe_window_seconds,
     )
-    # Logger "removed" callbacks are recorded but must not collide with the post itself.
-    if n.action != "posted":
+    if n.action == "active_on_connect":
+        # Re-sent by the logger when its listener reconnects: same notification as an
+        # earlier "posted" row, however long ago, so match the key with no time window.
+        ev.dedupe_window = None
+    elif n.action != "posted":
+        # "removed" callbacks are recorded but must not collide with the post itself.
         ev.dedupe_key = f"{n.action}:{ev.dedupe_key}"
     event_id, created = insert_event(conn, settings, ev, inst)
     response.status_code = 201 if created else 200

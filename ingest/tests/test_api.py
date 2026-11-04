@@ -80,6 +80,15 @@ def test_removed_action_does_not_collide(client, clean):
     assert r.status_code == 201
 
 
+def test_active_on_connect_matches_earlier_post(client, clean):
+    client.post("/v1/notification", json=notif())
+    r = client.post("/v1/notification", json=notif(action="active_on_connect",
+                                                   posted_at=T0.isoformat()))
+    assert r.json()["duplicate"]
+    new = client.post("/v1/notification", json=notif(action="active_on_connect", text="never seen"))
+    assert new.status_code == 201
+
+
 def test_match_event_join_and_engagement(client, clean):
     clean.execute(
         """insert into match_events (source, source_event_id, match_id, sport, competition, home, away,
