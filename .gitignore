@@ -9,6 +9,7 @@ out/
 fleet/out/
 # Android
 logger-apk/.gradle/
+logger-apk/.kotlin/
 logger-apk/**/build/
 logger-apk/local.properties
 *.apk
