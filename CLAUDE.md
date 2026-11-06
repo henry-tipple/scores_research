@@ -34,7 +34,7 @@ It measures push and email frequency, what triggers those sends, and UI state ac
 | `feeds/` | `FeedAdapter` protocol, fake replay adapter (`feeds/samples/*.json`), Sportradar stub and poller |
 | `ops/` | `health`, `restart`, `waves`, `snapshot` and `flow_runner`. All shell-outs go through an injectable runner (`DryRunner` in tests and `--dry-run`). |
 | `flows/` | Maestro templates and `selectors/<app>.yaml`. The runner passes every variable as `-e`. |
-| `logger-apk/` | Kotlin NotificationListenerService. Never built so far (no SDK in the scaffolding session). |
+| `logger-apk/` | Kotlin NotificationListenerService. Builds and its unit tests pass; not yet run on a device. |
 | `analysis/` | Phase 4 placeholder |
 
 Python imports use top-level package names via `PYTHONPATH`

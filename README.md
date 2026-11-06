@@ -87,7 +87,7 @@ instances take turns. `make fleet` prints peak RAM against the host budget.
 ## What needs the real server or apps
 
 * **Selectors.** Every Maestro selector is a `TODO(selector)` placeholder (`flows/selectors/*.yaml`).
-* **Logger APK.** It has never been built; the first build needs an Android SDK. See `logger-apk/README.md`.
+* **Logger APK.** It builds and its unit tests pass, but it hasn't run on a device yet. See `logger-apk/README.md`.
 * **Push campaign extractors.** Only Braze `cid` and OneSignal `i` come from the brief; the
   others are guesses (`ingest/ingest/campaign.py`).
 * **VPN.** Per-market routing inside ReDroid has to be validated (`fleet/vpn/README.md`).

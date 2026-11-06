@@ -22,9 +22,17 @@ tracked packages and posts each notification to the ingest service:
 
 ## Build status
 
-**Not built yet.** The scaffolding session had no Android SDK, so neither `assembleDebug`
-nor the unit tests (`RetryQueueTest`) have been run. Treat the first build on a machine
-with the SDK as part of review.
+**Builds, and its unit tests pass.** It was first built on 2026-11-06 with AGP 8.7.3, JDK 21
+and SDK platform 36. `./gradlew test assembleDebug` produces `notif-logger-<instance>-debug.apk`
+(about 2.3 MB). The APK declares the listener service with `BIND_NOTIFICATION_LISTENER_SERVICE`
+and has the instance ID and ingest URL built in. All 5 `RetryQueueTest` tests pass.
+
+**Not yet run on a device.** Nothing has installed it on an emulator or a ReDroid instance, so
+the listener, the uploader and the retry loop are untested on Android (checklist step 8).
+
+In a cloud session, the `scores_research` environment's setup script installs the SDK at
+`/opt/android-sdk` and writes `local.properties`. If Maven Central answers 429 (rate limited),
+rerun the build; Gradle keeps what it already downloaded.
 
 ## Build (one APK per instance)
 
