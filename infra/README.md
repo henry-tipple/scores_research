@@ -19,7 +19,7 @@ Target: Hetzner dedicated server, Ubuntu 24.04, KVM capable. Sizing is still ope
    Persist it in `/etc/modules-load.d/redroid.conf`. Ashmem isn't needed on Android 12+.
    Validate the Android 16 image's kernel requirements before ordering the box.
 2. **Docker.** Install Docker Engine with compose v2. Keep `/var/lib/docker` and
-   `REDROID_DATA_ROOT` on NVMe; 40 instances at about 6–10 GB of `/data` each adds up.
+   `REDROID_DATA_ROOT` on NVMe; 38 instances at about 6–10 GB of `/data` each adds up.
 3. **Image.** `REDROID_IMAGE` is a custom Android 16 + GApps build. It's out of scope until legal
    sign-off, as is any Google account or Play Store sign-in.
 4. **VPN.** Put one provider env file per market in `/etc/study/vpn/vpn-<market>.env`

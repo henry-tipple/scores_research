@@ -60,9 +60,10 @@ cohorts:
   - id: C6
     name: Premium
     market: UK
+    apps: [fotmob]                       # only FotMob has a paid tier
     follows: {teams: [Arsenal]}
     notif_settings: {preset: defaults}
-    behaviour: Daily open; paid tier
+    behaviour: Daily open; paid tier (FotMob only)
     hypothesis: Whether paying users get fewer commercial sends or different match alerts.
     paid_tier: true
     flows: {onboard: onboard, daily: daily_open, times: ["08:00"]}

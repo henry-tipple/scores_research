@@ -7,8 +7,9 @@ Guidance for Claude Code sessions in this repo.
 This is a DAZN Sports Data competitor study of 365Scores, FotMob and LiveScore on Android.
 It measures push and email frequency, what triggers those sends, and UI state across sports.
 
-* **Fleet.** ReDroid containers run 34 cohort instances (12 cohorts × 3 apps, minus FotMob for
-  C11 and C12) plus 6 atlas instances, 40 in total.
+* **Fleet.** ReDroid containers run 32 cohort instances (12 cohorts × 3 apps, minus FotMob for
+  C11 and C12, and C6 Premium on FotMob only, the one app with a paid tier) plus 6 atlas
+  instances, 38 in total.
 * **Data path.** Logger APK and Mailpit feed the ingest service, which writes the Postgres
   `events` table. A match-context feed is joined to each send, and Metabase is the dashboard.
 
@@ -43,7 +44,7 @@ Python imports use top-level package names via `PYTHONPATH`
 ## Run and test
 
 ```bash
-make up && make seed     # stack + 12 cohorts + 40 instances
+make up && make seed     # stack + 12 cohorts + 38 instances
 make fake-events         # fake day through the real ingest paths (incl. Mailpit webhook)
 make test                # pytest in the tools container; DB tests use study_test (reset each run)
 make fleet               # generator output in fleet/out/

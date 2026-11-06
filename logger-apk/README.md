@@ -40,7 +40,7 @@ cd logger-apk
 ./gradlew test            # JVM unit tests for the retry queue and HTTP classification
 ```
 
-To build all 40, run `make fleet` from the repo root to generate `fleet/out/manifest.json`, then:
+To build all 38, run `make fleet` from the repo root to generate `fleet/out/manifest.json`, then:
 
 ```bash
 logger-apk/build_all.sh fleet/out/manifest.json out/apks

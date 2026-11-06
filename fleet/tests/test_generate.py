@@ -15,9 +15,9 @@ def cfg():
 def test_counts(cfg):
     fleet, cohorts, inst = cfg
     assert len(cohorts) == 12
-    assert sum(i.kind == "cohort" for i in inst) == 34
+    assert sum(i.kind == "cohort" for i in inst) == 32
     assert sum(i.kind == "atlas" for i in inst) == 6
-    assert len(inst) == 40
+    assert len(inst) == 38
 
 
 def test_multisport_cohorts_skip_fotmob(cfg):
@@ -49,7 +49,7 @@ def test_same_device_across_apps_in_cohort(cfg):
 def test_redroid_commands_valid(cfg):
     fleet, _, inst = cfg
     lines = g.render_redroid(fleet, inst).strip().splitlines()
-    assert len(lines) == 40
+    assert len(lines) == 38
     names, ports = set(), set()
     for line in lines:
         argv = shlex.split(line)
@@ -62,7 +62,7 @@ def test_redroid_commands_valid(cfg):
         ports.add(opts["-p"])
         assert any(a.startswith("persist.sys.timezone=") for a in argv)
         assert fleet["redroid"]["image"] in argv
-    assert len(names) == len(ports) == 40
+    assert len(names) == len(ports) == 38
 
 
 def test_resource_overrides(cfg):
@@ -105,5 +105,5 @@ def test_env_override(monkeypatch):
 def test_sql_is_idempotent_upsert(cfg):
     sql = g.render_sql(*cfg)
     assert sql.count("insert into cohorts") == 12
-    assert sql.count("insert into instances") == 40
-    assert sql.count("on conflict (id) do update") == 52
+    assert sql.count("insert into instances") == 38
+    assert sql.count("on conflict (id) do update") == 50

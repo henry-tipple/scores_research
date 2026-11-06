@@ -103,7 +103,7 @@ def build_pushes(day: date) -> list[dict]:
     i = "de-c7-365scores"
     push(i, "365scores", "07:30", "Bayern München", "Kompany vor dem Topspiel: \"Wir sind bereit\"", "news",
          extras=onesig("de-news"))
-    push(i, "365scores", "16:00", "Exklusives Angebot", "365Scores Premium jetzt 30% Rabatt", "promo",
+    push(i, "365scores", "16:00", "Exklusives Angebot", "Trikots jetzt 30% Rabatt im Partner-Shop", "promo",
          extras=onesig("de-premium"))
 
     # --- C11 multi-sport on 365Scores: NBA overnight + Arsenal goal

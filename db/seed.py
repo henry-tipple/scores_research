@@ -27,6 +27,11 @@ def seed(url: str) -> dict:
         counts = {t: conn.execute(f"select count(*) from {t}").fetchone()[0]
                   for t in ("apps", "cohorts", "instances")}
         counts["atlas"] = conn.execute("select count(*) from instances where kind = 'atlas'").fetchone()[0]
+        # Seeding only upserts, so instances removed from the config stay in the table (their
+        # events keep pointing at them). Report them rather than deleting history.
+        wanted = [i.id for i in instances]
+        counts["stale"] = [r[0] for r in conn.execute(
+            "select id from instances where not (id = any(%s)) order by id", (wanted,))]
     return counts
 
 
@@ -40,6 +45,9 @@ def main() -> int:
     c = seed(a.database_url)
     print(f"seeded: {c['apps']} apps, {c['cohorts']} cohorts, {c['instances']} instances "
           f"({c['instances'] - c['atlas']} cohort + {c['atlas']} atlas)")
+    if c["stale"]:
+        print(f"warning: {len(c['stale'])} instance(s) in the database are no longer in the fleet config: "
+              f"{', '.join(c['stale'])}. Their rows are kept; run `make reset` on a dev stack to start clean.")
     return 0
 
 

@@ -23,7 +23,7 @@ def test_packages_match_apps_table(conn):
 
 def test_seed_counts(conn):
     assert conn.execute("select count(*) from cohorts").fetchone()[0] == 12
-    assert conn.execute("select count(*) from instances").fetchone()[0] == 40
+    assert conn.execute("select count(*) from instances").fetchone()[0] == 38
     assert conn.execute("select count(*) from instances where kind='atlas'").fetchone()[0] == 6
 
 

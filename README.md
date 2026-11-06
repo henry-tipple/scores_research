@@ -9,8 +9,10 @@ DAZN Sports Data study of three Android scores apps: **365Scores**, **FotMob** a
    during and after the game, for every sport?
 
 **Method.** A fleet of ReDroid Android containers runs scripted user cohorts. There are
-12 cohorts × 3 apps = **34 cohort instances**; FotMob is football-only, so C11 and C12 skip it.
-Two "atlas" instances per app capture UI, which makes **6 atlas instances** and **40 in total**.
+12 cohorts × 3 apps, minus the apps a cohort can't run on, gives **32 cohort instances**:
+FotMob is football-only, so the multi-sport cohorts C11 and C12 skip it, and only FotMob has a
+paid tier, so C6 Premium runs on FotMob alone. Two "atlas" instances per app capture UI, which
+makes **6 atlas instances** and **38 in total**.
 
 Data flow:
 * A notification logger on each instance posts every notification to ingest.
@@ -41,7 +43,7 @@ analysis/     Phase 4 notebooks (placeholder)
 
 ```bash
 make up            # Postgres, Mailpit, ingest, Metabase (copies .env.example -> .env)
-make seed          # schema + 12 cohorts + 40 instances
+make seed          # schema + 12 cohorts + 38 instances
 make fake-events   # a realistic fake day: pushes, live updates, emails (through Mailpit)
 make test          # pytest suite in the tools container, against the study_test DB
 make fleet         # fleet summary + fleet/out/{fleet.sh,redroid.txt,manifest.json,instances.sql}

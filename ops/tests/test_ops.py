@@ -25,7 +25,7 @@ def test_restart_slots_local_0400_staggered(fleet_instances):
     _, instances = fleet_instances
     now = datetime(2026, 11, 4, 2, 0, tzinfo=UTC)
     slots = restart.slots_for(instances, now)
-    assert len(slots) == 40
+    assert len(slots) == 38
     uk = [s for s in slots if s.instance.tz == "Europe/London"]
     assert uk[0].at == datetime(2026, 11, 4, 4, 0, tzinfo=UTC)          # 04:00 GMT
     assert all(b.at - a.at == timedelta(minutes=2) for a, b in zip(uk, uk[1:]))

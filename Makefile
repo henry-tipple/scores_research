@@ -26,7 +26,7 @@ reset: .env ## Stop the stack and delete all data volumes
 migrate: .env ## Apply schema + migrations
 	$(TOOLS) python db/migrate.py
 
-seed: .env ## Migrate, then load 12 cohorts and 40 instances
+seed: .env ## Migrate, then load 12 cohorts and 38 instances
 	$(TOOLS) python db/seed.py
 
 test: .env ## Run the pytest suite in the tools container (uses the study_test DB)
